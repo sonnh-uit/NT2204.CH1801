@@ -6,7 +6,7 @@
 Hệ thống được triển khai là một hệ thống đơn giản, chỉ bao gồm backend và database. Người dùng sử dụng một domain duy nhất truy cập vào ứng dụng. Tùy vị trí của người dùng, ứng dụng được điều hướng đến các server khác nhau. Ứng dụng có sử dụng cân bằng tải. Database có khả năng chịu lỗi cao, thời gian đọc nhanh.
 
 \subsection{Phân tích thiết kế hệ thống}
-
+\label{sec4_sub2}
 Với những yêu cầu như đề ra tại \ref{sec4_sub1}, ta nhận định:
 
 \begin{itemize}
@@ -29,7 +29,7 @@ Tổng quan hệ thống trình bày trong hình \ref{fig:sec4-overall-diagram}.
 
 \begin{figure}
     \centering
-    \includegraphics[scale=0.5]{section4/geoproximity_rule.png}
+    \includegraphics[scale=0.6]{section4/geoproximity_rule.png}
     \caption{Mô tả geoproximity rule của Route 53}
     \label{fig:sec4-geoproximity_rule}
 \end{figure}
@@ -42,6 +42,76 @@ Tại database, tiến hành deploy một RDS MySQL chính tại \textit{us-east
 
 \subsection{Hiện thực ứng dụng}
 
+Chúng ta tiến hành tạo các tài nguyên như đã trình bày trong \ref{sec4_sub2}.
 
+Tại region \textit{us-east-1}, tiến hành tạo các tài nguyên EC2 và Application Load Balancer.
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.4]{section4/us_ec2.png} \\
+    \includegraphics[scale=0.4]{section4/us_applb.png}
+    \caption{Các tài nguyên tạo tại region US}
+    \label{fig:us-resources}
+\end{figure}
+
+Tương tự trong hình \ref{fig:sing-resources} là các tài nguyên ở region Sing.
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.4]{section4/sing_ec2.png} \\
+    \includegraphics[scale=0.4]{section4/sing_applb.png}
+    \caption{Các tài nguyên tạo tại region Sing}
+    \label{fig:sing-resources}
+\end{figure}
+
+Đối với database, database có sự khác biệt giữa Primary và Replica (hình \ref{fig:database})
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.4]{section4/us_db.png} \\
+    \includegraphics[scale=0.4]{section4/sing_db.png}
+    \caption{Database tại hai region US và Sing}
+    \label{fig:database}
+\end{figure}
+
+
+Đối với Route53, ta cấu hình domain \textit{nt2004.sonnh.net} theo rule Geoproximity như trình bày tại \ref{sec4_sub2}. Ngoài ra, để thuận tiện testing, cấu hình thêm các domain \textit{sing-lab.sonnh.net} và \textit{us-lab.sonnh.net} như hình \ref{fig:route53}.
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.4]{section4/route53.png}
+    \caption{Cấu hình các record trong Route53}
+    \label{fig:route53}
+\end{figure}
 
 \subsection{Kết quả ứng dụng trong từng ngữ cảnh}
+
+Kết quả, hình \ref{fig:cross_region_access} thể hiện, khi cùng truy cập một domain, với vị trí tại Việt Nam thì ứng dụng của chúng ta được xử lý bởi backend đặt tại Sing, còn khi chuyển vùng bằng VPN sang US thì lại được xử lý bởi backend đặt tại US.
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.3]{section4/vn_accessed.png} \\
+    \includegraphics[scale=0.3]{section4/us_accessed.png}
+    \caption{Truy cập cùng một domain ở các vị trí khác nhau}
+    \label{fig:cross_region_access}
+\end{figure}
+
+Tại app domain \textit{sing-lab.sonnh.net}, ta request hai loại thao tác với database khác nhau (action=create\_table và action=select\_records). Kết quả khi request tạo bảng, là yêu cầu cần ghi, nó được xử lý bởi backend đặt tại US (do forward request sang), ngược lại thì được xử lý ở Sing (xem hình \ref{fig:sing-query})
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.8]{section4/sing_query_create_table.png} \\
+    \includegraphics[scale=0.8]{section4/sing_query_select.png}
+    \caption{Các yêu cầu khác nhau cho app domain tại Sing}
+    \label{fig:sing-query}
+\end{figure}
+
+Một ví dụ nữa, ta sẽ thêm các records vào database với domain sing, và sau đó query từ domain us. Hình \ref{fig:sing-us-records} cho thấy, record insert vào database dược xử lý tại US, nhưng bởi server web2, trong khi request lấy dữ liệu lại được xử lý bởi server web1. Có sự xuất hiện này là do ta đã sử dụng Application Load Balancer.
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.5]{section4/sing-query-insert-records.png} \\
+    \includegraphics[scale=0.45]{section4/us-query-select-records.png}
+    \caption{Thực hiện tạo records và sau đó query với hai domain khác nhau}
+    \label{fig:sing-us-records}
+\end{figure}
