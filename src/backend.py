@@ -28,7 +28,7 @@ def api():
     query = request.args.get('query')
     query = urllib.parse.unquote(query)
     query = f"{query};"
-
+    
     if action == 'create_table':
         status, result = database.create_table(query)
     elif action == 'insert_record':
@@ -39,14 +39,16 @@ def api():
         status = 400
         result == "Query was denied"
 
-    response = {
+    data = {
         'server-hostname' : get_hostname(),
         'timestamp': int(time.time()),
         'query_detail' : query,
         'status_code' : status,
         'message': result
     }
-    return jsonify(response)
+    response = jsonify(data)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 def get_hostname() -> str:

@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: sent-november-headache
+      MYSQL_DATABASE: cloud_demo_database
+      MYSQL_USER: cloud_demo_admin
+      MYSQL_PASSWORD: sent-november-headache
+    expose:
+      - 3306
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database_data:/var/lib/mysql
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
+    command: --bind-address=0.0.0.0
+
+volumes:
+  database_data:

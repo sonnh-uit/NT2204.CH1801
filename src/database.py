@@ -19,15 +19,11 @@ def read_env_file(file_path='env'):
     return env_vars
 
 def create_connection(is_write: bool):
-    # env_vars = read_env_file()
-
-    # DATABASE_NAME=env_vars['DATABASE_NAME']
     DATABASE_NAME = os.environ.get('DATABASE_NAME')
     REGION_CODE = os.environ.get('REGION_CODE')
     USER = os.environ.get('USER')
     PASSWORD = os.environ.get('PASSWORD')
     if REGION_CODE == 'us-east-1':
-        # HOST = env_vars['RDS_ENDPOINT']
         HOST = os.environ.get('RDS_ENDPOINT')
     else:
         if is_write:

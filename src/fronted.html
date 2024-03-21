@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web Frontend App</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+  }
+  #container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  #result {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+</style>
+</head>
+<body>
+    <div id="container">
+        <h2>Web Frontend App</h2>
+        <label for="query">Query:</label>
+        <input type="text" id="query" placeholder="Enter your query">
+        <select id="action">
+            <option value="select_records">select_records</option>
+          <option value="create_table">create_table</option>
+          <option value="insert_record">insert_record</option>
+          
+          <!-- Add other backend options here -->
+        </select>
+        <button onclick="fetchData()">Submit</button>
+        <div id="url"></div> <!-- Display URL here -->
+        <div id="result"></div>
+      </div>
+
+<script>
+function fetchData() {
+  var query = document.getElementById('query').value;
+  var action = document.getElementById('action').value;
+  // Construct URL with query parameter
+  var url = "http://127.0.0.1:8080/api?action=" + action + "&query=" + encodeURIComponent(query);
+
+
+  // Make a GET request to the backend API
+  fetch(url)
+    .then(response => {
+      // Check if the response status is OK (200)
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      // Return the response JSON
+      return response.json();
+    })
+    .then(data => {
+      // Display the entire response in the result box
+      document.getElementById('result').innerText = JSON.stringify(data, null, 4);
+    })
+    .catch(error => {
+      console.error('Error fetching data:', error);
+      console.error('Error details:', error.message);
+      document.getElementById('result').innerText = 'Error fetching data. Please try again. Error: ' + error.message;
+    });
+}
+
+function displayResult(data) {
+
+  var resultDiv = document.getElementById('result');
+  resultDiv.innerHTML = ''; // Clear previous result
+  var resultList = document.createElement('ul');
+
+  data.forEach(item => {
+    var listItem = document.createElement('li');
+    listItem.textContent = item.name; 
+    resultList.appendChild(listItem);
+  });
+
+  resultDiv.appendChild(resultList);
+}
+
+
+
+</script>
+</body>
+</html>
