@@ -44,9 +44,6 @@ function fetchData() {
   var action = document.getElementById('action').value;
   // Construct URL with query parameter
   var url = "http://nt2204.sonnh.net/api?action=" + action + "&query=" + encodeURIComponent(query);
-  // document.getElementById('url').textContent = 'URL: ' + url;
-
-  // Make a GET request to the backend API
   fetch(url)
     .then(response => {
       // Check if the response status is OK (200)
@@ -57,13 +54,12 @@ function fetchData() {
       return response.json();
     })
     .then(data => {
-      // Display the entire response in the result box
       document.getElementById('result').innerText = JSON.stringify(data, null, 4);
     })
     .catch(error => {
       console.error('Error fetching data:', error);
       console.error('Error details:', error.message);
-      document.getElementById('result').innerText = 'Error fetching data. Please try again. Error: ' + error.message;
+      document.getElementById('result').innerText = 'Your request is not allowed. Please select other request. Your action: ' + action + '. Your query: ' + query;
     });
 }
 
