@@ -37,7 +37,7 @@ def create_connection(is_write: bool):
             password=PASSWORD,
             database=DATABASE_NAME
         )
-         logging.info(MYSQLHOST, USER, DATABASE_NAME)
+        logging.info(MYSQLHOST, USER, DATABASE_NAME)
         return 200, connection
 
     except mysql.connector.Error as err:
