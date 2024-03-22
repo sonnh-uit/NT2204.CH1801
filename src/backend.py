@@ -28,10 +28,10 @@ def index():
 def api():
     action = request.args.get('action')
     query = request.args.get('query')
-    logging(query)
+    logging.info(query)
     query = urllib.parse.unquote(query)
     query = f"{query};"
-    logging(query)
+    logging.info(query)
     if action == 'create_table':
         status, result = database.create_table(query)
     elif action == 'insert_record':
