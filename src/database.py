@@ -1,6 +1,6 @@
 import mysql.connector
 import os
-
+import logging
 def free_connection(cursor, connection):
     try:
         cursor.close()
@@ -24,19 +24,20 @@ def create_connection(is_write: bool):
     USER = os.environ.get('USER')
     PASSWORD = os.environ.get('PASSWORD')
     if REGION_CODE == 'us-east-1':
-        HOST = os.environ.get('RDS_ENDPOINT')
+        MYSQLHOST = os.environ.get('RDS_ENDPOINT')
     else:
         if is_write:
-            HOST = os.environ.get('RDS_ENDPOINT')
+            MYSQLHOST = os.environ.get('RDS_ENDPOINT')
         else:
-            HOST = os.environ.get('RDS_READ_REPLICA')
+            MYSQLHOST = os.environ.get('RDS_READ_REPLICA')
     try:
         connection = mysql.connector.connect(
-            host=HOST,
+            host=MYSQLHOST,
             user=USER,
             password=PASSWORD,
             database=DATABASE_NAME
         )
+         logging.info(MYSQLHOST, USER, DATABASE_NAME)
         return 200, connection
 
     except mysql.connector.Error as err:
