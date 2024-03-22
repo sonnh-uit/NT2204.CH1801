@@ -28,7 +28,7 @@ def create_connection(is_write: bool):
     load_dotenv()
     DATABASE_NAME = os.environ.get('DATABASE_NAME')
     REGION_CODE = os.environ.get('REGION_CODE')
-    USER = os.environ.get('USER')
+    DBUSER = os.environ.get('DBUSER')
     PASSWORD = os.environ.get('PASSWORD')
     if REGION_CODE == 'us-east-1':
         MYSQLHOST = os.environ.get('RDS_ENDPOINT')
@@ -40,11 +40,11 @@ def create_connection(is_write: bool):
     try:
         connection = mysql.connector.connect(
             host=MYSQLHOST,
-            user=USER,
+            user=DBUSER,
             password=PASSWORD,
             database=DATABASE_NAME
         )
-        logging.info(MYSQLHOST, USER, DATABASE_NAME)
+        logging.info(MYSQLHOST, DBUSER, DATABASE_NAME)
         return 200, connection
 
     except mysql.connector.Error as err:
