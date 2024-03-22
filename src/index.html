@@ -44,7 +44,7 @@ function fetchData() {
   var action = document.getElementById('action').value;
   // Construct URL with query parameter
   var url = "http://127.0.0.1:8080/api?action=" + action + "&query=" + encodeURIComponent(query);
-
+  document.getElementById('url').textContent = 'URL: ' + url;
 
   // Make a GET request to the backend API
   fetch(url)
