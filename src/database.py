@@ -1,6 +1,12 @@
 import mysql.connector
 import os
 import logging
+from dotenv import load_dotenv
+
+
+
+
+
 def free_connection(cursor, connection):
     try:
         cursor.close()
@@ -19,6 +25,7 @@ def read_env_file(file_path='env'):
     return env_vars
 
 def create_connection(is_write: bool):
+    load_dotenv()
     DATABASE_NAME = os.environ.get('DATABASE_NAME')
     REGION_CODE = os.environ.get('REGION_CODE')
     USER = os.environ.get('USER')
